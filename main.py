@@ -1,8 +1,6 @@
-from fastapi import FastAPI
-
-app = FastAPI()
+from pagecache.api import app
 
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"service": "page-cache", "status": "ok"}
