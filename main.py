@@ -1,8 +1,16 @@
-from fastapi import FastAPI
+from pathlib import Path
 
-app = FastAPI()
+from pagecache import CacheConfig, PageCache
+from pagecache.journal import WritebackJournal
+from pagecache.service import create_app
+from pagecache.storage import LocalFileStorage
 
+DATA_DIR = Path(__file__).parent / "data"
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+config = CacheConfig()
+storage = LocalFileStorage(DATA_DIR / "pages", config.page_size)
+journal = WritebackJournal(DATA_DIR / "writeback.journal")
+cache = PageCache(storage, journal, config)
+cache.start()
+
+app = create_app(cache)
